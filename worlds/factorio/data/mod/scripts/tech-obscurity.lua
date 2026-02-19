@@ -12,7 +12,6 @@
 --      hints will only be send once. Unless an achipelago command demands the whole list.
 
 -- TODO:
--- fix quality packs
 -- only send logical advancement checks (a yaml setting)
 
 local function send_hint(technologies, force)
@@ -278,7 +277,9 @@ local function get_item_count(item_name, force)
     local count = 0
     for surface_name, surface in pairs(game.surfaces) do
         local flowstatistics = force.get_item_production_statistics(surface)
-        count = count + flowstatistics.get_input_count(item_name)
+        for quality_name, quality in pairs(prototypes.quality) do
+            count = count + flowstatistics.get_input_count({name=item_name, quality=quality_name})
+        end
     end
     return count
 end
