@@ -451,7 +451,7 @@ local function on_rocket_launched(event)
         satellite_count = 0
         cargo_pod = event.rocket.cargo_pod
         if cargo_pod then
-            satellite_count = cargo_pod.get_item_count("satellite")
+            satellite_count = cargo_pod.get_item_count({name="satellite", quality="normal", comparator=">="})
         end
         if satellite_count > 0 or GOAL == 0 then
             storage.forcedata[event.rocket.force.name]['victory'] = 1
