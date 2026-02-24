@@ -16,7 +16,6 @@ local ARCHIPELAGO_DEATH_LINK_SETTING = constants.setting_names.death_link
 local ENERGY_INCREMENT = constants.ENERGY_INCREMENT
 local ENERGY_LINK_EFFICIENCY = constants.ENERGY_LINK_EFFICIENCY
 
-local DEATH_LINK
 if settings.global[ARCHIPELAGO_DEATH_LINK_SETTING].value then
     DEATH_LINK = 1
 else
@@ -31,17 +30,17 @@ local events = {
 }
 
 {% if chunk_shuffle %}
-local LAST_POSITIONS = {}
-local GENERATOR = nil
-local NORTH = 1
-local EAST = 2
-local SOUTH = 3
-local WEST = 4
-local ER_COLOR = {1, 1, 1, 0.2}
-local ER_SEED = {{ random.randint(4294967295, 2*4294967295)}}
-local CURRENTLY_MOVING = false
-local ER_FRAMES = {}
-local CHUNK_OFFSET = {
+LAST_POSITIONS = {}
+GENERATOR = nil
+NORTH = 1
+EAST = 2
+SOUTH = 3
+WEST = 4
+ER_COLOR = {1, 1, 1, 0.2}
+ER_SEED = {{ random.randint(4294967295, 2*4294967295)}}
+CURRENTLY_MOVING = false
+ER_FRAMES = {}
+CHUNK_OFFSET = {
 [NORTH] = {0, 1},
 [EAST] = {1, 0},
 [SOUTH] = {0, -1},
@@ -142,6 +141,7 @@ end
     events.[defines.events.on_player_changed_position] = on_player_changed_position
 {% endif %}
 -- Handle the pathfinding result of teleport traps
+script.on_event(defines.events.on_script_path_request_finished, handle_teleport_attempt)
 
 local function validate_energy_link_bridge(unit_number, entity)
     if not entity then
@@ -227,20 +227,19 @@ local function on_energy_bridge_removed(entity)
         storage.energy_link_bridges[entity.unit_number] = nil
     end
 end
-
 if (ENERGY_INCREMENT) then
-    events[defines.events.on_tick] = on_check_energy_link
+    script.on_event(defines.events.on_tick, on_check_energy_link)
 
-    events[defines.events.on_built_entity] = function(event) on_energy_bridge_constructed(event.entity) end
-    events[defines.events.on_robot_built_entity] = function(event) on_energy_bridge_constructed(event.entity) end
-    events[defines.events.on_entity_cloned] = function(event) on_energy_bridge_constructed(event.destination) end
+    script.on_event({defines.events.on_built_entity}, function(event) on_energy_bridge_constructed(event.entity) end)
+    script.on_event({defines.events.on_robot_built_entity}, function(event) on_energy_bridge_constructed(event.entity) end)
+    script.on_event({defines.events.on_entity_cloned}, function(event) on_energy_bridge_constructed(event.destination) end)
 
-    events[defines.events.script_raised_revive] = function(event) on_energy_bridge_constructed(event.entity) end
-    events[defines.events.script_raised_built] = function(event) on_energy_bridge_constructed(event.entity) end
+    script.on_event({defines.events.script_raised_revive}, function(event) on_energy_bridge_constructed(event.entity) end)
+    script.on_event({defines.events.script_raised_built}, function(event) on_energy_bridge_constructed(event.entity) end)
 
-    events[defines.events.on_entity_died] = function(event) on_energy_bridge_removed(event.entity) end
-    events[defines.events.on_player_mined_entity] = function(event) on_energy_bridge_removed(event.entity) end
-    events[defines.events.on_robot_mined_entity] = function(event) on_energy_bridge_removed(event.entity) end
+    script.on_event({defines.events.on_entity_died}, function(event) on_energy_bridge_removed(event.entity) end)
+    script.on_event({defines.events.on_player_mined_entity}, function(event) on_energy_bridge_removed(event.entity) end)
+    script.on_event({defines.events.on_robot_mined_entity}, function(event) on_energy_bridge_removed(event.entity) end)
 end
 
 {% if not imported_blueprints -%}
@@ -351,7 +350,7 @@ local function on_runtime_mod_setting_changed(event)
         end
     end
 end
-events[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
+script.on_event(defines.events.on_runtime_mod_setting_changed, on_runtime_mod_setting_changed)
 
 -- Updates a player, attempting to send them any pending samples (if relevant)
 local function update_player(index)
@@ -404,17 +403,17 @@ local function update_player(index)
 end
 
 -- Update players upon them connecting, since updates while they're offline are suppressed.
-events[defines.events.on_player_joined_game] = function(event) update_player(event.player_index) end
+script.on_event(defines.events.on_player_joined_game, function(event) update_player(event.player_index) end)
 
 local function update_player_event(event)
     update_player(event.player_index)
 end
 
-events[defines.events.on_player_main_inventory_changed] = update_player_event
+script.on_event(defines.events.on_player_main_inventory_changed, update_player_event)
 
 -- Update players when the cutscene is cancelled or finished.  (needed for skins_factored)
-events[defines.events.on_cutscene_cancelled] = update_player_event
-events[defines.events.on_cutscene_finished] = update_player_event
+script.on_event(defines.events.on_cutscene_cancelled, update_player_event)
+script.on_event(defines.events.on_cutscene_finished, update_player_event)
 
 -- Initialize player data, either from them joining the game or them already being part of the game when the mod was
 -- added.`
@@ -475,7 +474,7 @@ local function add_samples(force, name, count)
     end
 end
 
-local function on_init()
+script.on_init(function()
     {% if not imported_blueprints %}set_permissions(){% endif %}
     storage.forcedata = {}
     storage.playerdata = {}
@@ -499,7 +498,7 @@ local function on_init()
             remote.call("silo_script", "set_no_victory", true)
         end
     end
-end
+end)
 
 -- hook into researches done
 local function on_research_finished(event)
@@ -683,21 +682,19 @@ local function spawn_entity(surface, force, name, x, y, radius, randomize, avoid
 end
 
 
-events[defines.events.on_entity_died] = function(event)
-    if event.entity.name == "character" then 
-        if DEATH_LINK == 0 then
-            return
-        end
-        if CURRENTLY_DEATH_LOCK == 1 then -- don't re-trigger on same event
-            return
-        end
-
-        local force = event.entity.force
-        storage.forcedata[force.name].death_link_tick = game.tick
-        dumpInfo(force)
-        kill_players(force)
+script.on_event(defines.events.on_entity_died, function(event)
+    if DEATH_LINK == 0 then
+        return
     end
-end
+    if CURRENTLY_DEATH_LOCK == 1 then -- don't re-trigger on same event
+        return
+    end
+
+    local force = event.entity.force
+    storage.forcedata[force.name].death_link_tick = game.tick
+    dumpInfo(force)
+    kill_players(force)
+end, {LuaEntityDiedEventFilter = {["filter"] = "name", ["name"] = "character"}})
 
 
 -- add / commands

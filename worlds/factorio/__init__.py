@@ -12,7 +12,7 @@ from worlds.generic import Rules
 from .Locations import location_pools, location_table, craftsanity_locations
 from .Mod import generate_mod
 from .Options import (FactorioOptions, MaxSciencePack, Silo, Satellite, TechTreeInformation, Goal,
-                      TechLayerObscurity, TechDepthObscurity, TechCraftObscurity, TechCostDistribution, option_groups)
+                      TechCostDistribution, option_groups)
 from .Shapes import get_shapes
 from .Technologies import base_tech_table, recipe_sources, base_technology_table, \
     all_product_sources, required_technologies, get_rocket_requirements, \
