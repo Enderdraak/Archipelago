@@ -307,9 +307,16 @@ class FactorioContext(CommonContext):
                 if tech_split[0] == "ap" and tech_split[2] == "":
                     location_id = int(tech_split[1])
                     #this should now only have te location id of the check. So 123456.....
-                    techs_to_hint.append(location_id)
-                    if self.silence_rebounce_toggle:
-                        self.silence_rebounce_hints.append(location_id)
+                    already_hinted = False
+                    if self.stored_data[f"_read_hints_{self.team}_{self.slot}"]:
+                        for hint in self.stored_data[f"_read_hints_{self.team}_{self.slot}"]:
+                            if hint["location"] == location_id:
+                                already_hinted = True
+                    
+                    if already_hinted:
+                        techs_to_hint.append(location_id)
+                        if self.silence_rebounce_toggle:
+                            self.silence_rebounce_hints.append(location_id)
         
         if len(techs_to_hint) > 0:
             async_start(self.send_msgs([{"cmd": "CreateHints", "locations": techs_to_hint}]))
@@ -410,7 +417,6 @@ async def game_watcher(ctx: FactorioContext):
                                     bridge_logger.warning("RCON Client has unexpectedly lost connection. Please issue /rcon_reconnect.")
                                 else:
                                     logger.debug(f"EnergyLink: Sent {format_SI_prefix(value)}J")
-
 
             await asyncio.sleep(0.1)
 
