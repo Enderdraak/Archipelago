@@ -25,7 +25,7 @@ data_template: Optional[jinja2.Template] = None
 data_final_template: Optional[jinja2.Template] = None
     # if locale PR is also added then remove the line below:
 locale_template: Optional[jinja2.Template] = None
-control_template: Optional[jinja2.Template] = None
+main_template: Optional[jinja2.Template] = None
 settings_template: Optional[jinja2.Template] = None
 constants_template: Optional[jinja2.Template] = None
 
@@ -113,7 +113,7 @@ def generate_mod(world: "Factorio", output_directory: str):
             data_final_template = template_env.get_template("data-final-fixes.lua")
             # if locale PR is also added then remove the line below:
             locale_template = template_env.get_template(r"locale/en/locale.cfg")
-            control_template = template_env.get_template("control.lua")
+            main_template = template_env.get_template(r"/script/main.lua")
             settings_template = template_env.get_template("settings.lua")
             constants_template = template_env.get_template("constants.lua")
     # get data for templates
@@ -198,8 +198,8 @@ def generate_mod(world: "Factorio", output_directory: str):
                                       data_template.render(**template_data)))
     mod.writing_tasks.append(lambda: (versioned_mod_name + "/data-final-fixes.lua",
                                       data_final_template.render(**template_data)))
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/control.lua",
-                                      control_template.render(**template_data)))
+    mod.writing_tasks.append(lambda: (versioned_mod_name + "/scripts/main.lua",
+                                      main_template.render(**template_data)))
     mod.writing_tasks.append(lambda: (versioned_mod_name + "/settings.lua",
                                       settings_template.render(**template_data)))
     
