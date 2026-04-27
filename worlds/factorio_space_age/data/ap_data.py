@@ -153,8 +153,8 @@ small_progressive_groups = {
     ],
     "progressive-portable-power": [
         "solar-panel-equipment",
-        "fusion-reactor-equipment",
         "fission-reactor-equipment",
+        "fusion-reactor-equipment",
     ],
     "processing-unit-productivity": [
         "processing-unit-productivity",
@@ -314,8 +314,8 @@ large_progressive_groups = {
         "automation-2",
         "processing-unit",
         "circuit-network",
-        "quantum-processor",
         "automation-3",
+        "quantum-processor",
         "advanced-combinators",
         "processing-unit-productivity", # infinite
     ],
@@ -387,6 +387,7 @@ large_progressive_groups = {
         "metallurgic-science-pack",
         "calcite-processing",
         "cliff-explosives",
+        "artillery",
         "low-density-structure-productivity", # infinite
     ],
     "progressive-gleba": [
