@@ -1105,8 +1105,13 @@ class FactorioData:
                 source_exprs = []
                 for setting, value in pentapod_killers.items():
                     if not value: continue
-                    if setting == "land mine":
-                        source_exprs.append(fmt_automate_item(names.land_mine))
+                    if setting == "land mine and construction robot":
+                        source_exprs.append({"and": [
+                            fmt_automate_item(names.land_mine),
+                            fmt_access_item(names.passive_provider_chest),
+                            fmt_access_item(names.roboport),
+                            fmt_access_item(names.construction_robot),
+                        ]})
                     elif setting == "rocket turret":
                         source_exprs.append({"and": [
                             fmt_access_item(names.rocket_turret),

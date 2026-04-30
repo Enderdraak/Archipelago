@@ -615,7 +615,7 @@ class LogicDemolisherKillers(OptionDict):
         "atomic bomb": True,
         "railgun": True,
     }
-    schema = Schema({k: bool for k in default.keys()})
+    schema = Schema({Optional(k): bool for k in default.keys()})
 
 @auto_group
 class LogicPentapodKillers(OptionDict):
@@ -625,9 +625,11 @@ class LogicPentapodKillers(OptionDict):
     killing Gleba enemies is logically required for automating agricultural science,
     and if starting on Gelba, also required for automating chemical science.
     WARNING: military bonuses for damage, weapon speed, etc. are not considered by the logic.
+
+    For backward compatibility with apworld versions prior to 2.2.0, "land mine" is accepted as an alias for "land mine and construction robot".
     """
     default = {
-        "land mine": True,
+        "land mine and construction robot": True,
         "gun turret and firearm magazine": False,
         "gun turret and piercing rounds magazine": False,
         "gun turret and uranium rounds magazine": True,
@@ -635,7 +637,7 @@ class LogicPentapodKillers(OptionDict):
         "tesla turret": True,
         "railgun": True,
     }
-    schema = Schema({k: bool for k in default.keys()})
+    schema = Schema({Optional(k): bool for k in [*default.keys(), "land mine"]})
 
 
 option_groups.append(OptionGroup("Energy Link", [], start_collapsed=True))

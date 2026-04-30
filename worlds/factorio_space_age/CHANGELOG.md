@@ -1,5 +1,14 @@
 # Factorio: Space Age apworld Changelog
 
+## 2.2.0
+
+* The `pentapod_killers` option `"land mine"` is renamed to `"land mine and construction robot"`, and it now also logically requires construction robots and roboports. The old name is still accepted as an alias. Thanks `@super_sebby` for suggesting this on discord.
+* The `pentapod_killers` and `demolisher_killers` options now accept partial specification. Missing keys fallback to their default values.
+* Swapped `automation-3` earlier and `quantum-processor` later in `progressive-circuit`. Thanks @ObsoleteDesign for suggesting this in [#24](https://github.com/thejoshwolfe/Archipelago/issues/24).
+* Added `artillery` to the end of `progressive-vulcanus` as an non-essential padding tech for that chain. Thanks @ObsoleteDesign for suggesting this in [#24](https://github.com/thejoshwolfe/Archipelago/issues/24).
+* Fixed `progressive-portable-power` giving the fission and fusion equipment in the wrong order. Thanks @ObsoleteDesign for reporting this in [#23](https://github.com/thejoshwolfe/Archipelago/issues/23).
+* Fixed the empty `bioflux-processing` tech appearing in the `progressive-gleba` chain on when starting on Gleba. [#20](https://github.com/thejoshwolfe/Archipelago/issues/20)
+
 ## 2.1.0
 
 * Add `require_gun_turret_upgrades` option so you don't have to fly through space with no damage or speed upgrades. Fixes #15.

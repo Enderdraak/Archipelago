@@ -176,6 +176,8 @@ class Factorio(World):
              *{
                  name for name, technology_data in the_data["technology"].items()
                  if technology_data.get("hidden", False)
+                     # bioflux-processing with gleba start becomes empty.
+                     or len(technology_data.get("effects", [])) == 0
              },
         }
         if self.starting_planet == names.nauvis:
@@ -491,6 +493,15 @@ class Factorio(World):
             # If you ask for no filler, we'll give you nothing, which is filler.
             filler_weights[""] = 1
         self.filler_weights_argv = list(zip(*filler_weights.items()))
+
+        self.options.demolisher_killers.value = {**self.options.demolisher_killers.default, **self.options.demolisher_killers.value}
+        if "land mine" in self.options.pentapod_killers.value:
+            # There's probably a way to do this with the Schema, but idk how to do that.
+            if "land mine and construction robot" in self.options.pentapod_killers.value:
+                raise KeyError("pentapod_killers should only contain one of 'land mine' or 'land mine and construction robot', because they are aliases. the latter is preferred.")
+            self.options.pentapod_killers.value["land mine and construction robot"] = self.options.pentapod_killers.value["land mine"]
+            del self.options.pentapod_killers.value["land mine"]
+        self.options.pentapod_killers.value = {**self.options.pentapod_killers.default, **self.options.pentapod_killers.value}
 
         self.empty_technologies = sorted(self.factorio_data.empty_technology_names)
         self.random.shuffle(self.empty_technologies)
