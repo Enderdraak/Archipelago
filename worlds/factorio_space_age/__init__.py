@@ -182,6 +182,10 @@ class Factorio(World):
         }
         if self.starting_planet == names.nauvis:
             remove_from_progressive_stacks.add(names.planet_discovery_nauvis)
+        if self.options.goal.current_key == "aquilo_orbit_10_science":
+            remove_from_progressive_stacks.add(names.planet_discovery_aquilo)
+        elif self.options.goal.current_key == "solar_system_edge_11_science":
+            remove_from_progressive_stacks.add(names.promethium_science_pack)
         self.progressive_technology_stacks = {
             group_name: [
                 name for name in stack

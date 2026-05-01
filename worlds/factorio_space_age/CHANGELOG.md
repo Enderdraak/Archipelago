@@ -2,12 +2,13 @@
 
 ## 2.2.0
 
-* The `pentapod_killers` option `"land mine"` is renamed to `"land mine and construction robot"`, and it now also logically requires construction robots and roboports. The old name is still accepted as an alias. Thanks `@super_sebby` for suggesting this on discord.
+* The `pentapod_killers` option `"land mine"` is renamed and enhanced to `"land mine and construction robot"`. The old name is still accepted as an alias. Thanks `@super_sebby` for suggesting this on discord.
 * The `pentapod_killers` and `demolisher_killers` options now accept partial specification. Missing keys fallback to their default values.
 * Swapped `automation-3` earlier and `quantum-processor` later in `progressive-circuit`. Thanks @ObsoleteDesign for suggesting this in [#24](https://github.com/thejoshwolfe/Archipelago/issues/24).
 * Added `artillery` to the end of `progressive-vulcanus` as an non-essential padding tech for that chain. Thanks @ObsoleteDesign for suggesting this in [#24](https://github.com/thejoshwolfe/Archipelago/issues/24).
 * Fixed `progressive-portable-power` giving the fission and fusion equipment in the wrong order. Thanks @ObsoleteDesign for reporting this in [#23](https://github.com/thejoshwolfe/Archipelago/issues/23).
-* Fixed the empty `bioflux-processing` tech appearing in the `progressive-gleba` chain on when starting on Gleba. [#20](https://github.com/thejoshwolfe/Archipelago/issues/20)
+* Fixed the empty `bioflux-processing` tech appearing in the `progressive-gleba` chain when starting on Gleba. [#20](https://github.com/thejoshwolfe/Archipelago/issues/20)
+* Fixed goals `aquilo_orbit_10_science` and `solar_system_edge_11_science` effectively functioning like their shorter name counterparts due to their unrandomized final technology getting scooped up into a progressive chain, thereby unlocking too early. [#25](https://github.com/thejoshwolfe/Archipelago/issues/25)
 
 ## 2.1.0
 
