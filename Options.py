@@ -1875,7 +1875,7 @@ def generate_yaml_templates(target_folder: typing.Union[str, "pathlib.Path"], ge
                 preset_name = f" - {name}" if name else ""
                 with open(os.path.join(preset_folder if name else target_folder,
                                        get_file_safe_name(game_name + preset_name) + ".yaml"),
-                          "w", encoding="utf-8-sig") as f:
+                          "w", encoding="utf-8") as f:
                     f.write(res)
 
 
