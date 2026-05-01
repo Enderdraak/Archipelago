@@ -797,8 +797,8 @@ class AttackTrapWeight(FillerWeight):
 @auto_group
 class TeleportTrapWeight(FillerWeight):
     """
-    Weighted chance that a filler item is a trap that when received triggers a random teleport.
-    It is ensured the player can walk back to where they got teleported from.
+    DEPRECATED: this option has been removed due to bugs.
+    See https://github.com/thejoshwolfe/Archipelago/issues/18 if you'd like to contribute a fix so that it can be re-enabled.
     """
 
 @auto_group

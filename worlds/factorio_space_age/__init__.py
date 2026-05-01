@@ -487,7 +487,7 @@ class Factorio(World):
             names.evolution_trap:            self.options.evolution_trap_weight.value,
             names.grenade_trap:              self.options.grenade_trap_weight.value,
             names.inventory_spill_trap:      self.options.inventory_spill_trap_weight.value,
-            names.teleport_trap:             self.options.teleport_trap_weight.value,
+            names.teleport_trap:             0, #self.options.teleport_trap_weight.value, # See https://github.com/thejoshwolfe/Archipelago/issues/18
         }
         assert set(trap_names) == trap_filler_weights.keys(), "need to sync list of trap names"
         filler_weights.update(trap_filler_weights)
