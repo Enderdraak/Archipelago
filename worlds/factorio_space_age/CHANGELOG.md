@@ -3,7 +3,6 @@
 ## 2.2.1
 
 * Fix crash when your slot names contains a space. Thanks `@Silasary` for reporting this on Discord.
-Ju
 
 ## 2.2.0
 
