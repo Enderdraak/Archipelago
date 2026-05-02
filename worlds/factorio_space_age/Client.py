@@ -501,7 +501,7 @@ async def factorio_spinup_server(ctx: FactorioContext) -> bool:
                 msg = factorio_queue.get()
                 factorio_server_logger.info(msg)
                 # Example: "0.307 Loading mod AP-14613752113758896254-P1-factorio 1.1.2 (data-updates.lua)"
-                if match := re.search(r'Loading mod AP-\S* (\d+\.\d+\.\d+) \((?:settings|data)(?:-updates|-final-fixes)?\.lua\)$', msg):
+                if match := re.search(r'Loading mod AP-.* (\d+\.\d+\.\d+) \((?:settings|data)(?:-updates|-final-fixes)?\.lua\)$', msg):
                     version_str = match.group(1)
                     ctx.mod_version = Version(*(int(number) for number in version_str.split(".")))
                 elif "Write data path: " in msg:
@@ -573,6 +573,7 @@ class FactorioJSONtoTextParser(JSONtoTextParser):
 
 
 factorio_server_logger = logging.getLogger("FactorioServer")
+factorio_server_logger.setLevel(logging.INFO)
 settings: FactorioSettings = get_settings().factorio_options
 if os.path.samefile(settings.executable, sys.executable):
     selected_executable = settings.executable

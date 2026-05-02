@@ -1,5 +1,10 @@
 # Factorio: Space Age apworld Changelog
 
+## 2.2.1
+
+* Fix crash when your slot names contains a space. Thanks `@Silasary` for reporting this on Discord.
+Ju
+
 ## 2.2.0
 
 * The `pentapod_killers` option `"land mine"` is renamed and enhanced to `"land mine and construction robot"`. The old name is still accepted as an alias. Thanks `@super_sebby` for suggesting this on discord.
