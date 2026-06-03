@@ -23,6 +23,8 @@ data:extend({
         type = "bool-setting",
         name = PARAMS.death_link_setting,
         setting_type = "runtime-global",
+        localised_name = {"mod-setting-name.archipelago-death-link"},
+        localised_description = {"mod-setting-description.archipelago-death-link"},
         default_value = PARAMS.default_death_link,
     }
 })

@@ -55,6 +55,13 @@ for tech_name, tech_data in pairs(PARAMS.new_technology_data) do
         new_tech.icons = table.deepcopy(source_tech.icons)
     end
 
+    if tech_data.revealed then
+        new_tech.localised_name = {"technology-name.ap-technology-full", tech_data.receiver_name, tech_data.display_item_name, tech_data.location_name}
+    else
+        new_tech.localised_name = {"technology-name.ap-technology-hidden", tech_data.location_name}
+    end
+    new_tech.localised_description = {"technology-description.ap-technology-full", tech_data.display_item_name, tech_data.receiver_name, {tech_data.helpfulness_clause}}
+
     data:extend{new_tech}
 end
 
@@ -65,7 +72,6 @@ if PARAMS.energy_link_increment > 0 then
     local entity = table.deepcopy(data.raw["accumulator"]["accumulator"])
     entity.name = "ap-energy-link-bridge"
     entity.minable.result = "ap-energy-link-bridge"
-    entity.localised_name = "Archipelago EnergyLink Bridge" -- TODO: move to locale.cfg
     entity.energy_source.buffer_capacity = "50MJ"
     entity.energy_source.input_flow_limit = "1MW"
     entity.energy_source.output_flow_limit = "1MW"
@@ -77,7 +83,6 @@ if PARAMS.energy_link_increment > 0 then
 
     local item = table.deepcopy(data.raw["item"]["accumulator"])
     item.name = "ap-energy-link-bridge"
-    item.localised_name = "Archipelago EnergyLink Bridge"
     item.place_result = entity.name
     tint_icon(item, energy_bridge_tint())
     data.raw["item"]["ap-energy-link-bridge"] = item
@@ -88,7 +93,6 @@ if PARAMS.energy_link_increment > 0 then
     recipe.results = { {type = "item", name = item.name, amount = 1} }
     recipe.energy_required = 10
     recipe.enabled = PARAMS.energy_link_bridge_starts_unlocked
-    recipe.localised_name = "Archipelago EnergyLink Bridge"
     data.raw["recipe"]["ap-energy-link-bridge"] = recipe
 
     local technology = {
@@ -108,7 +112,6 @@ if PARAMS.enable_alternate_explosives then
     -- Alternate explosives.
     local recipe = table.deepcopy(data.raw["recipe"]["biosulfur"])
     recipe.name = "explosives-from-bioflux"
-    recipe.localised_name = "Explosives from bioflux"
     recipe.icon = "__base__/graphics/technology/explosives.png"
     recipe.icon_size = 256
     recipe.ingredients = {
@@ -175,7 +178,7 @@ for _, tech_name in pairs(PARAMS.hide_base_technologies) do
         type = "scripted",
         icon = "__" .. PARAMS.mod_name .. "__/graphics/icons/ap.png",
         icon_size = 128,
-        trigger_description = {"", "This is sent to you from the multiworld"},
+        trigger_description = {"technology-description.ap-technology-script-trigger"},
     }
     base_tech.prerequisites = {"promethium-science-pack_location"}
     base_tech.upgrade = false
@@ -184,8 +187,10 @@ for _, tech_name in pairs(PARAMS.hide_base_technologies) do
     -- Explain where to get this.
     local stack_name = technology_name_to_progressive_group_name[tech_name]
     if stack_name ~= nil then
-        base_tech.localised_description = {"", "Unlocked as part of the progressive chain: " .. stack_name}
+        --base_tech.localised_description = {"archipelago.info-item-from-progressive",  stack_name}
+        base_tech.research_trigger.trigger_description = {"archipelago.info-item-from-progressive",  stack_name}
     else
-        base_tech.localised_description = {"", "The item in the multiworld is named: " .. tech_name}
+        --base_tech.localised_description = {"archipelago.info-item-stand-alone", tech_name}
+        base_tech.research_trigger.trigger_description = {"archipelago.info-item-stand-alone", tech_name}
     end
 end

@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from . import Factorio
 
 template_parameters_template: Optional[jinja2.Template] = None
-locale_template: Optional[jinja2.Template] = None
 
 template_load_lock = threading.Lock()
 
@@ -133,7 +132,7 @@ def generate_mod(
     output_directory: str,
 ):
 
-    global template_parameters_template, locale_template
+    global template_parameters_template
     with template_load_lock:
         if not template_parameters_template:
             def load_template(name: str):
@@ -147,7 +146,6 @@ def generate_mod(
             )
 
             template_parameters_template = template_env.get_template("template_parameters.lua")
-            locale_template = template_env.get_template("locale/en/locale.cfg")
 
     # get data for templates
     mod_name = f"AP-{multiworld.seed_name}-P{player}-{multiworld.get_file_safe_player_name(player)}"
@@ -208,16 +206,16 @@ def generate_mod(
             display_name = f"{receiver_name}'s {item_name} ({location.name})"
             display_item_name = item_name
             if is_goal:
-                helpfulness_clause = ", which completes your goal"
+                helpfulness_clause = "technology-description.ap-technology-item-goal"
                 icon = "/trophy.png"
             elif is_advancement:
-                helpfulness_clause = ", which is considered a logical advancement"
+                helpfulness_clause = "technology-description.ap-technology-item-advancement"
                 icon = "/ap.png"
             elif is_useful:
-                helpfulness_clause = ", which is considered useful"
+                helpfulness_clause = "technology-description.ap-technology-item-useful"
                 icon = "/ap_unimportant.png"
             elif is_trap:
-                helpfulness_clause = ", which is considered fun"
+                helpfulness_clause = "technology-description.ap-technology-item-trap"
                 icon = "/ap_unimportant.png"
             if item_name in technology_props_lua:
                 # This is an item for Factorio (probably). Use the built in icon.
@@ -265,6 +263,11 @@ def generate_mod(
         tech_data = {
             "icon": icon,
             "prerequisites": prerequisites,
+            "revealed": location.revealed,
+            "receiver_name": receiver_name,
+            "display_item_name": display_item_name,
+            "location_name": location.name,
+            "helpfulness_clause": helpfulness_clause,
         }
         if "unit" in technology_props:
             tech_data["unit"] = {
@@ -353,11 +356,6 @@ def generate_mod(
     }
     template_parameters_contents = template_parameters_template.render(mod_params=render_lua_value(mod_params))
 
-    locale_contents = locale_template.render(
-        locations=locale_locations,
-        death_link_setting=death_link_setting_name,
-    )
-
     zf_path = os.path.join(output_directory, versioned_mod_name + ".zip")
     mod = FactorioModFile(zf_path, player=player, player_name=player_name)
 
@@ -369,6 +367,7 @@ def generate_mod(
         "data-updates.lua",
         "control.lua",
         "lib.lua",
+        "locale/en/locale.cfg",
         "graphics/icons/ap.png",
         "graphics/icons/ap_unimportant.png",
         "graphics/icons/trophy.png",
@@ -382,8 +381,6 @@ def generate_mod(
 
     mod.writing_tasks.append(lambda: (versioned_mod_name + "/template_parameters.lua",
                                       template_parameters_contents))
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/locale/en/locale.cfg",
-                                      locale_contents))
 
     info = {
         "name": mod_name,
