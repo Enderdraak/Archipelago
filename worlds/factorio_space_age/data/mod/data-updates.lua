@@ -165,9 +165,15 @@ for name, effects in pairs(PARAMS.technology_effect_additions) do
 end
 
 local technology_name_to_progressive_group_name = {}
+local stack_position = {}
 for stack_name, stack in pairs(PARAMS.progressive_technology_stacks) do
+    local counter = 1
     for _, stack_item in pairs(stack) do
         technology_name_to_progressive_group_name[stack_item] = stack_name
+        if stack_position[stack_item] == nil then --ensure only the first instance of this item is found.
+            stack_position[stack_item] = counter
+        end
+        counter = counter + 1
     end
 end
 -- Disable and hide base technologies.
@@ -178,7 +184,6 @@ for _, tech_name in pairs(PARAMS.hide_base_technologies) do
         type = "scripted",
         icon = "__" .. PARAMS.mod_name .. "__/graphics/icons/ap.png",
         icon_size = 128,
-        trigger_description = {"technology-description.ap-technology-script-trigger"},
     }
     base_tech.prerequisites = {"promethium-science-pack_location"}
     base_tech.upgrade = false
@@ -187,10 +192,9 @@ for _, tech_name in pairs(PARAMS.hide_base_technologies) do
     -- Explain where to get this.
     local stack_name = technology_name_to_progressive_group_name[tech_name]
     if stack_name ~= nil then
-        --base_tech.localised_description = {"archipelago.info-item-from-progressive",  stack_name}
-        base_tech.research_trigger.trigger_description = {"archipelago.info-item-from-progressive",  stack_name}
+        base_tech.research_trigger.trigger_description = {"archipelago.progressive-script-trigger", stack_position[tech_name].."", stack_name}
+        --yes, adding that empty string is important.
     else
-        --base_tech.localised_description = {"archipelago.info-item-stand-alone", tech_name}
-        base_tech.research_trigger.trigger_description = {"archipelago.info-item-stand-alone", tech_name}
+        base_tech.research_trigger.trigger_description = {"archipelago.stand-alone-script-trigger", tech_name}
     end
 end

@@ -386,7 +386,7 @@ def generate_mod(
         "name": mod_name,
         "version": __version__,
         "title": "Archipelago",
-        "author": "Berserker, Josh Wolfe",
+        "author": "Berserker, Josh Wolfe, CosmicWolf",
         "homepage": "https://archipelago.gg",
         "description": "Integration client for the Archipelago Randomizer",
         "factorio_version": "2.0",
