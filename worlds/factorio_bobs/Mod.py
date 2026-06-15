@@ -36,6 +36,7 @@ base_info = {
     "dependencies": [
         "base >= 2.0.28",
         "? quality >= 2.0.28",
+        "quality_glassware = 0.1.0",
     ]
 }
 

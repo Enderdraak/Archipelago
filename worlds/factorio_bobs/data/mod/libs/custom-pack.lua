@@ -3,8 +3,9 @@ local util = require("util")
 
 local library = {}
 
-function library.get_icons(ingredients)
+function library.get_icons(ingredients, glass_ware)
     local icons = {}
+    math.random
     return icons
 end
 
