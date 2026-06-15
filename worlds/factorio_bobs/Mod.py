@@ -22,6 +22,7 @@ settings_final_template: Optional[jinja2.Template] = None
 general_template: Optional[jinja2.Template] = None
 locations_template: Optional[jinja2.Template] = None
 custom_recipes_template: Optional[jinja2.Template] = None
+custom_science_packs_template: Optional[jinja2.Template] = None
 
 template_load_lock = threading.Lock()
 
@@ -87,7 +88,7 @@ def generate_mod(world: "FactorioBobs", output_directory: str):
     multiworld = world.multiworld
     random = world.random
 
-    global settings_final_template, general_template, locations_template, custom_recipes_template
+    global settings_final_template, general_template, locations_template, custom_recipes_template, custom_science_packs_template
     with template_load_lock:
         if not settings_final_template:
             def load_template(name: str):
@@ -102,12 +103,14 @@ def generate_mod(world: "FactorioBobs", output_directory: str):
             general_template = template_env.get_template(r"Archipelago/general.lua")
             locations_template = template_env.get_template(r"Archipelago/locations.lua")
             custom_recipes_template = template_env.get_template(r"Archipelago/custom_recipes.lua")
+            custom_science_packs_template = template_env.get_template(r"Archipelago/custom_science_packs.lua")
     # get data for templates
     locations = [(location, location.item)
                  for location in world.science_locations]
     mod_name = f"AP-{multiworld.seed_name}-P{player}-{multiworld.get_file_safe_player_name(player)}"
     versioned_mod_name = mod_name + "_" + Utils.__version__
     custom_recipes = world.custom_recipes.copy()
+    custom_science_packs = world.custom_science_packs.copy()
 
     def flop_random(low, high, base=None):
         """Guarantees 50% below base and 50% above base, uniform distribution in each direction."""
@@ -160,6 +163,7 @@ def generate_mod(world: "FactorioBobs", output_directory: str):
         "world_gen_settings": world_gen_settings,
         "techs_to_hint": world.techs_to_hint,
         "tech_craft_obscurity": False, #to ensure that the tech obscurity does not break, but does not need to be an option in the Yaml.
+        "custom_science_packs": custom_science_packs
     }
 
     for factorio_option, factorio_option_instance in dataclasses.asdict(world.options).items():
@@ -203,6 +207,10 @@ def generate_mod(world: "FactorioBobs", output_directory: str):
                                       locations_template.render(**template_data)))
     mod.writing_tasks.append(lambda: (versioned_mod_name + "/Archipelago/custom_recipes.lua",
                                       custom_recipes_template.render(**template_data)))
+    mod.writing_tasks.append(lambda: (versioned_mod_name + "/Archipelago/custom_science_packs.lua",
+                                      custom_science_packs_template.render(**template_data)))
+    
+    
 
     info = copy.deepcopy(base_info)
     info["name"] = mod_name

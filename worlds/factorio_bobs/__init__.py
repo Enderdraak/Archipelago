@@ -99,12 +99,14 @@ class FactorioBobs(World):
         self.additional_logic: dict[int, AndRule] = {}
         self.progression_technologies: set[Technology] = set()
         self.custom_recipes : typing.Dict[str, GameRecipe] = {}
+        self.custom_science_packs : typing.Dict[str, dict] = {}
         self.custom_products: dict[str, GameItem] = {}
         self.science_locations = []
         self.tech_tree_layout_prerequisites = {}
         self.modpack: FactorioModpack | None = None
         self.removed_technologies: set[str] = set()
 
+        self.generic_pack_names = "not made"
         self.techs_to_hint = {}
 
         self.logger = logging.getLogger(f"{self.game}:{self.player}")
@@ -569,6 +571,51 @@ class FactorioBobs(World):
         for technology_name, technology in self.modpack.base_technology_table.items():
             custom_technologies[technology_name] = technology.get_custom(self, allowed_packs, self.player)
         return custom_technologies
+    
+    factorio_pack_names = frozenset({
+        "Astronomic", "Geological", "Friction", "Transportation", "Robotic",
+        "Nutritional", "Botanical", "Vehicular", "Ablative", "Atomic", "Magnetic",
+        "Computational", "Microscopic", "Offshore"})
+
+    def get_science_pack_names(self, recipe) -> list:
+        if self.generic_pack_names == "not made":
+            self.generic_pack_names = set()
+            for world in self.multiworld.worlds.values():
+                if hasattr(world, "factorio_pack_names"):
+                    self.generic_pack_names |= world.factorio_pack_names
+                elif world.game.startswith("Pokemon"):
+                    self.generic_pack_names |= {"Pokeball", "Oak's", "Evolution"}
+                elif world.game.startswith("The Legend of Zelda:") or world.game in ["A Link Between Worlds", "A Link to the Past", "Majora's Mask Recompiled", "Ocarina of Time", "Twilight Princess", "Wind Waker"]:
+                    self.generic_pack_names |= {"Triforce", "Wisdom", "Courage", "Power"}
+                elif world.game == "A Hat in Time":
+                    self.generic_pack_names |= {"Hat", "Chronological"}
+                elif "Final Fantasy" in world.game:
+                    self.generic_pack_names |= {"Magitech", "Crystal", "Imperial"}
+                elif "Kingdom Hearts" in world.game:
+                    self.generic_pack_names |= {"Keyblade", "Heart", "Darkness"}
+                elif world.game == "Jigsaw":
+                    self.generic_pack_names |= {"Puzzle"}
+                elif world.game == "Satisfactory":
+                    self.generic_pack_names |= {"Ficsit", "Somersloop"}
+                else:
+                    print(f"No custom science pack names added for {world.game}")
+
+        science_pack_name = []
+        ingredients = set(recipe.ingredients.keys())
+        if "scrap" in ingredients:
+            science_pack_name.append("Archeological")
+        elif "biter-egg" in ingredients:
+            science_pack_name.append("Biter")
+        elif "pentapod-egg" in ingredients:
+            science_pack_name.append("Pentapod")
+        elif "lubricant" in ingredients:
+            science_pack_name.append("Lubricated")
+        elif self.generic_pack_names:
+            name = self.generic_pack_names.pop()
+            science_pack_name.append(f"{name}")
+        pass
+
+        return science_pack_name
 
     def set_custom_recipes(self):
         # for name, item in all_ingredients.items():
@@ -587,7 +634,13 @@ class FactorioBobs(World):
                 new_recipe.productivity = True
                 if pack in self.modpack.recipe_engine.recipes:
                     new_recipe.technologies = self.modpack.recipe_engine.recipes[pack].technologies
+                self.custom_science_packs[index] = {
+                    "name": f"archipelago-science-pack-{index}",
+                    "custon_name": self.get_science_pack_names(new_recipe),
+                    "recipe": new_recipe
+                }
                 self.custom_recipes[pack] = new_recipe
+        self.logger.info(self.custom_science_packs)
 
         original_rocket_part = self.modpack.recipe_engine.recipes["rocket-part"]
         custom_rocket_part = GameItem(self.modpack.recipe_engine, "rocket-part", DefinitionSource.WORLD, False)

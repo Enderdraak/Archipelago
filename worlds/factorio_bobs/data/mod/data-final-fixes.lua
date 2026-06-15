@@ -2,6 +2,7 @@
 local general = require("Archipelago/general")
 require("Archipelago/locations")
 require("Archipelago/custom_recipes")
+require("Archipelago/custom_science_packs")
 
 data.raw["item"]["rocket-part"].hidden = false
 data.raw["rocket-silo"]["rocket-silo"].fluid_boxes = {
