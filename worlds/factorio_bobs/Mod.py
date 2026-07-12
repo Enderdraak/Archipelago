@@ -35,6 +35,7 @@ base_info = {
     "dependencies": [
         "base >= 2.0.28",
         "? quality >= 2.0.28",
+        "? factoryplanner >= 2.1.1",
     ]
 }
 

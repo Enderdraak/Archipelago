@@ -246,6 +246,30 @@ local function chain_lookup(table, ...)
     return table
 end
 
+
+local function compat_with_factory_planner()
+    if not script.active_mods["factoryplanner"] then return end
+    local send_information = {version = 1, recipes = {}}
+
+    for _, name in pairs(general.technologies.hide_from_player()) do
+        if prototypes.technology[name].effects then
+            for _, effect in pairs(prototypes.technology[name].effects) do
+                if effect.type == "unlock-recipe" then
+                    local recipe = prototypes.recipe[effect.recipe]
+                    if recipe.hidden == false and recipe.hidden_from_player_crafting == false then
+                        send_information.recipes[recipe.name] = true
+                    end
+                end
+            end
+        end
+    end
+
+    if remote.interfaces["fp-integration"] then
+        remote.call("fp-integration", "overwrite_recipe_picker", send_information)
+    end
+
+end
+
 local function on_init()
     storage.forcedata = storage.forcedata or {}
     if general.allow_import_blueprints == false then
@@ -266,6 +290,12 @@ local function on_init()
     if remote.interfaces["silo_script"] then
         remote.call("silo_script", "set_no_victory", true)
     end
+
+    compat_with_factory_planner()
+end
+
+local function on_configuration_changed()
+
 end
 
 commands.add_command("ap-sync", "Used by the Archipelago client to get progress information", function(call)
@@ -339,6 +369,6 @@ lib.events = {
     --[defines.events.on_surface_created] = on_surface_created,
 }
 lib.on_init = on_init
---lib.on_configuration_changed = on_configuration_changed
+lib.on_configuration_changed = on_configuration_changed
 
 return lib
